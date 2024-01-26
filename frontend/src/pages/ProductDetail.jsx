@@ -20,8 +20,8 @@ function ProductDetail() {
     <div>
       <Link to="/">Go Back</Link>
       <div>
-        {product.images && product.images[0] && (
-          <img src={product.images[0].url} alt="single_img" className="h-18" />
+        {product.image && product.image && (
+          <img src={product.image} alt="single_img" className="h-18" />
         )}
 
         <div className="flex flex-col">
