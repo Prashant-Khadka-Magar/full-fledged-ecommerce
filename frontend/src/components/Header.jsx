@@ -1,7 +1,11 @@
 import React from "react";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 function Header() {
+  const { total_items } = useSelector(
+    (state) => state.cart
+  );
   return (
     <div className="bg-basecolor flex justify-between text-white sm:px-2 sm:text-lg font-bold">
       <NavLink to='/'>
@@ -15,7 +19,7 @@ function Header() {
       </NavLink>
       <div className="flex items-center sm:gap-x-4">
         <NavLink to='/cart' className="flex items-center">
-          <FaShoppingCart /> Cart
+          <FaShoppingCart /> Cart <p className="text-xs border rounded-full bg-white text-basecolor">{total_items}</p>
         </NavLink>
         <NavLink to='/login' className="flex items-center">
           <FaUser /> Sign In
