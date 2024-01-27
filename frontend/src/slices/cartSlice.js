@@ -4,7 +4,6 @@ const initialState = {
   cart: [],
   total_items: 0,
   total_price: 0,
-  shipping_fee: 15,
 };
 
 function updatedTotals(state) {
@@ -51,15 +50,15 @@ const cartSlice = createSlice({
         };
         state.cart.push(cartProducts);
       }
-      updatedTotals(state)
+      updatedTotals(state);
     },
     removeFromCart: (state, action) => {
       state.cart = state.cart.filter((item) => item._id !== action.payload);
-      updatedTotals(state)
+      updatedTotals(state);
     },
     clearCart: (state) => {
       state.cart = [];
-      updatedTotals(state)
+      updatedTotals(state);
     },
     increaseAmount: (state, action) => {
       state.cart = state.cart.map((item) => {
@@ -77,7 +76,7 @@ const cartSlice = createSlice({
           return item;
         }
       });
-      updatedTotals(state)
+      updatedTotals(state);
     },
     decreaseAmount: (state, action) => {
       state.cart = state.cart.map((item) => {
@@ -95,7 +94,7 @@ const cartSlice = createSlice({
           return item;
         }
       });
-      updatedTotals(state)
+      updatedTotals(state);
     },
   },
 });
