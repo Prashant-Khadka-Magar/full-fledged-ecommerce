@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import Product from "../components/Product";
-function Home() {
-  const [products, setProducts]=useState([])
+import { useGetProductsQuery } from "../slices/productsApiSlice";
+import Loader from "../components/Loader";
 
-  const fetchProducts=async ()=>{
-    const {data}=await axios.get('/api/products');
-    setProducts(data);
+function Home() {
+  const { data: products, isLoading, error } = useGetProductsQuery();
+
+  if (isLoading) {
+    return <h1 className="flex h-screen justify-center items-center text-2xl"> <Loader/></h1>;
+  }
+  if (error) {
+    return <h1  className="flex h-screen justify-center items-center text-2xl">Something Went Wrong</h1>;
   }
 
-  useEffect(()=>{
-    fetchProducts()
-  },[])
   return (
     <div>
       <div>
@@ -19,6 +20,7 @@ function Home() {
           <Product key={product._id} product={product} />
         ))}
       </div>
+     
     </div>
   );
 }

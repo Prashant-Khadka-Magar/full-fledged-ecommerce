@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Rating from "../components/Rating";
-import axios from "axios";
+import { useGetProductsDetailsQuery } from "../slices/productsApiSlice";
+import Loader from "../components/Loader";
 
 function ProductDetail() {
-  const [product, setProduct] = useState([]);
   const { id: productId } = useParams();
 
-  const fetchProduct = async () => {
-    const { data } = await axios.get(`/api/products/${productId}`);
-    setProduct(data);
-  };
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useGetProductsDetailsQuery(productId);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [productId]);
+  if (isLoading) {
+    return <h1 className="flex h-screen justify-center items-center text-2xl"> <Loader/></h1>;
+  }
+  if (error) {
+    return <h1  className="flex h-screen justify-center items-center text-2xl">Something Went Wrong</h1>;
+  }
   return (
     <div>
       <Link to="/">Go Back</Link>

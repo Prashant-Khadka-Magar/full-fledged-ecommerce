@@ -1,23 +1,18 @@
 import express from 'express';
-import {products} from './data/allProducts.js'
 import connectDb from './config/db.js';
-//SETTING UP .env
+import productRoutes from './routes/product.route.js'
+import {notFound,errorHandler} from './middleware/error.middleware.js'
 import dotenv from 'dotenv'
 dotenv.config()
 const port = process.env.PORT || 5000;
 
-//connect to mongoDB using mongoose
 connectDb() 
 const app=express();
 
-app.get('/api/products', (req, res) =>{
-    res.json(products)
-})
-app.get('/api/products/:id', (req, res) =>{
-    const product=products.find((product)=>product._id===req.params.id)
-    res.json(product)
-})
+app.use('/api/products',productRoutes)
 
+app.use(notFound)
+app.use(errorHandler)
 
 app.listen(port,()=>{
     console.log(`Server is running on port ${port}`)
