@@ -7,6 +7,7 @@ import {
   decreaseAmount,
 } from "../slices/cartSlice";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 function Cart() {
   const { cart, total_price } = useSelector((state) => state.cart);
   const [shipping_fee, setShipping_fee] = useState(0);
@@ -19,6 +20,10 @@ function Cart() {
   }, [total_price]);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const checkoutHandler = () => {
+    navigate("/login?redirect=/shipping");
+  };
 
   if (cart.length <= 0) {
     return <h1>Continue Shopping</h1>;
@@ -133,6 +138,9 @@ function Cart() {
             </p>
           </div>
         </div>
+      </div>
+      <div className="flex justify-end mt-4 mr-4">
+        <button onClick={checkoutHandler}>CheckOut</button>
       </div>
     </div>
   );
