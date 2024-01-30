@@ -32,7 +32,7 @@ function PlaceOrder() {
     try {
       const res = await createOrder({
         orderItems: cart,
-        shippinAddress: shipping_address,
+        shippingAddress: shipping_address,
         paymentMethod: payment_method,
         itemsPrice: total_price,
         shippingPrice: shipping_fee,

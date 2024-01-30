@@ -1,7 +1,7 @@
 import React from "react";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../slices/authSlice";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 function Header() {
@@ -42,7 +42,7 @@ function Header() {
 
         {userInfo ? (
           <ul>
-            <li>{userInfo.name}</li>
+            <Link to='/profile'>{userInfo.name}</Link>
             <li
               onClick={logoutHandler}
               className="cursor-pointer border border-white"
