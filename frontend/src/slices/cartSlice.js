@@ -1,10 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  cart: [],
-  total_items: 0,
-  total_price: 0,
+const loadCartFromLocalStorage = () => {
+  const storedCart = localStorage.getItem("cart");
+  return storedCart
+    ? JSON.parse(storedCart)
+    : {
+        cart: [],
+        total_items: 0,
+        total_price: 0,
+        shipping_address: {},
+        payment_method: "PayPal",
+        tax_price: 0,
+        shipping_fee:15
+      };
 };
+
+function saveCartToLocalStorage(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
 
 function updatedTotals(state) {
   state.total_items = state.cart.reduce(
@@ -19,7 +32,7 @@ function updatedTotals(state) {
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState,
+  initialState: loadCartFromLocalStorage(),
   reducers: {
     addToCart: (state, action) => {
       const { product, amount } = action.payload;
@@ -51,14 +64,17 @@ const cartSlice = createSlice({
         state.cart.push(cartProducts);
       }
       updatedTotals(state);
+      saveCartToLocalStorage(state);
     },
     removeFromCart: (state, action) => {
       state.cart = state.cart.filter((item) => item._id !== action.payload);
       updatedTotals(state);
+      saveCartToLocalStorage(state);
     },
     clearCart: (state) => {
       state.cart = [];
       updatedTotals(state);
+      saveCartToLocalStorage(state);
     },
     increaseAmount: (state, action) => {
       state.cart = state.cart.map((item) => {
@@ -77,6 +93,7 @@ const cartSlice = createSlice({
         }
       });
       updatedTotals(state);
+      saveCartToLocalStorage(state);
     },
     decreaseAmount: (state, action) => {
       state.cart = state.cart.map((item) => {
@@ -95,6 +112,17 @@ const cartSlice = createSlice({
         }
       });
       updatedTotals(state);
+      saveCartToLocalStorage(state);
+    },
+    saveShippingAddress: (state, action) => {
+      state.shipping_address = action.payload;
+      updatedTotals(state);
+      saveCartToLocalStorage(state);
+    },
+    savePaymentMethod: (state, action) => {
+      state.payment_method = action.payload;
+      updatedTotals(state);
+      saveCartToLocalStorage(state);
     },
   },
 });
@@ -105,5 +133,7 @@ export const {
   decreaseAmount,
   increaseAmount,
   removeFromCart,
+  saveShippingAddress,
+  savePaymentMethod,
 } = cartSlice.actions;
 export default cartSlice.reducer;

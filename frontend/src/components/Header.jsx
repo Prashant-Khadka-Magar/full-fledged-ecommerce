@@ -41,20 +41,15 @@ function Header() {
         </NavLink>
 
         {userInfo ? (
-          <div>
-            <p className="flex ">
-              <FaUser /> Sign In
-            </p>
-            <ul>
-              <li>{userInfo.name}</li>
-              <li
-                onClick={logoutHandler}
-                className="cursor-pointer border border-white"
-              >
-                Log Out
-              </li>
-            </ul>
-          </div>
+          <ul>
+            <li>{userInfo.name}</li>
+            <li
+              onClick={logoutHandler}
+              className="cursor-pointer border border-white"
+            >
+              Log Out
+            </li>
+          </ul>
         ) : (
           <NavLink to="/login" className="flex items-center">
             <FaUser /> Sign In

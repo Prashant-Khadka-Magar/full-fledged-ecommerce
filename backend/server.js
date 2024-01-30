@@ -2,6 +2,7 @@ import express from 'express';
 import connectDb from './config/db.js';
 import productRoutes from './routes/product.route.js'
 import userRoutes from './routes/user.route.js'
+import orderRoutes from './routes/order.route.js'
 import {notFound,errorHandler} from './middleware/error.middleware.js'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
@@ -24,6 +25,7 @@ app.use(cookieParser())
 //ROUTES
 app.use('/api/products',productRoutes)
 app.use('/api/users',userRoutes)
+app.use('/api/orders',orderRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

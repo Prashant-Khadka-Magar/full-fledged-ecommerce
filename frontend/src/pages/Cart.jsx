@@ -9,15 +9,9 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 function Cart() {
-  const { cart, total_price } = useSelector((state) => state.cart);
-  const [shipping_fee, setShipping_fee] = useState(0);
-  useEffect(() => {
-    if (total_price > 100) {
-      setShipping_fee(15);
-    } else {
-      setShipping_fee(0);
-    }
-  }, [total_price]);
+  const { cart, total_price, shipping_fee } = useSelector(
+    (state) => state.cart
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
