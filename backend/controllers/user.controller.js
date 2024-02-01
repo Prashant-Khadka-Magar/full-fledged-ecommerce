@@ -118,29 +118,79 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       isAdmin: updatedUser.isAdmin,
     });
   } else {
-    res.status(401); 
+    res.status(401);
     throw new Error("USER NOT FOUND");
   }
 });
 
 // get all the users -ADMIN ONLY
 const getUsers = asyncHandler(async (req, res) => {
-  res.send("get all users");
+  try {
+    const users = await User.find({});
+    res.status(200).json({
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching users",
+      error: error.message,
+    });
+  }
 });
+
+export default getUsers;
 
 // get a  user by ID -ADMIN ONLY
 const getUserById = asyncHandler(async (req, res) => {
-  res.send("get  user by ID");
+  const user = await User.findById(req.params.id).select("-password");
+
+  if (user) {
+    res.status(200).json({
+      user,
+    });
+  } else {
+    res.status(404);
+    throw new Error("USER NOT FOUND");
+  }
 });
 
 // delete a user -ADMIN ONLY
 const deleteUser = asyncHandler(async (req, res) => {
-  res.send("delete user profile");
+  const user = await User.findById(req.params.id);
+  if (user) {
+    if (user.isAdmin) {
+      res.status(400);
+      throw new Error("CANNOT DELETE ADMIN USER");
+    } else {
+      await User.deleteOne({ _id: req.params.id });
+      res.status(200).json("USER DELETED SUCCESSFULLY");
+    }
+  } else {
+    res.status(404);
+    throw new Error("USER NOT FOUND");
+  }
 });
 
 // delete a user -ADMIN ONLY
 const updateUser = asyncHandler(async (req, res) => {
-  res.send("update user");
+  const user = await User.findById(req.params.id);
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.isAdmin = Boolean(req.body.isAdmin);
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updateUser._id,
+      name: updateUser.name,
+      email: updateUser.email,
+      isAdmin: updateUser.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error("USER NOT FOUND");
+  }
 });
 
 export {

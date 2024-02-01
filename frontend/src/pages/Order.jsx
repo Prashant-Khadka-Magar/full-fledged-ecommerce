@@ -5,6 +5,7 @@ import {
   useGetOrderDetailsQuery,
   useGetPayPalClientIdQuery,
   usePayOrderMutation,
+  useDeliverOrderMutation,
 } from "../slices/ordersApiSlice";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from "react-toastify";
@@ -20,6 +21,8 @@ function Order() {
   } = useGetOrderDetailsQuery(orderId);
 
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+
+  const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const {
@@ -55,7 +58,7 @@ function Order() {
       try {
         await payOrder({ orderId, details });
         refetch();
-        toast.success('Order is paid');
+        toast.success("Order is paid");
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -84,6 +87,15 @@ function Order() {
       });
   }
 
+  const deliverHandler =async () => {
+    try {
+      await deliverOrder(orderId);
+      refetch();
+      toast.success('Order Delivered')
+    } catch (error) {
+      toast.error(error?.data?.message || error.message)
+    }
+  };
   if (isLoading) {
     return <Loader />;
   }
@@ -186,6 +198,15 @@ function Order() {
                 )}
               </div>
             )}
+
+            {userInfo &&
+              userInfo.isAdmin &&
+              order.isPaid &&
+              !order.isDelivered && (
+                <button type="button" onClick={deliverHandler}>
+                  {!loadingDeliver ? "Deliver" : <Loader />}
+                </button>
+              )}
           </div>
         </div>
       </div>

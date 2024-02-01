@@ -42,7 +42,8 @@ function Header() {
 
         {userInfo ? (
           <ul>
-            <Link to='/profile'>{userInfo.name}</Link>
+            <Link to="/profile">{userInfo.name}</Link>
+
             <li
               onClick={logoutHandler}
               className="cursor-pointer border border-white"
@@ -54,6 +55,13 @@ function Header() {
           <NavLink to="/login" className="flex items-center">
             <FaUser /> Sign In
           </NavLink>
+        )}
+        {userInfo && userInfo.isAdmin && (
+         <div className="flex flex-col bg-red-800">
+           <Link to="/admin/orderlist">Orders</Link>
+          <Link to="/admin/productlist">Products</Link>
+          <Link to="/admin/userlist">Users</Link>
+         </div>
         )}
       </div>
     </div>

@@ -8,3 +8,21 @@ button {
   border-radius: 10px;
   border: 1px solid black;
 }
+/* OrderList.css */
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #edf2f7;
+  font-weight: bold;
+}
+
