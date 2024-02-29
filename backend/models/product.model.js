@@ -18,6 +18,14 @@ const reviewSchema = new Schema({
     type: String,
     required: true,
   },
+  avatar:{
+    type: String,
+    required: true,
+  },
+  reply:{
+    type:String,
+    default:null,
+  }
 },{
     timestamps: true
 });
@@ -33,10 +41,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    image: {
+    image:[ {
       type: String,
       required: true,
-    },
+    }],
     brand: {
       type: String,
       required: true,
@@ -70,6 +78,10 @@ const productSchema = new Schema(
       required: true,
       default: 0,
     },
+    isFeatured:{
+      type: Boolean,
+      default: false,
+    }
   },
 
   {

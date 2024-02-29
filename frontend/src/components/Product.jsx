@@ -4,9 +4,9 @@ import Rating from "./Rating";
 
 function Product({ product }) {
   return (
-    <div className="shadow-lg m-2 bg-black text-white p-2">
+    <div className="shadow-lg m-2 bg-black text-white p-2 h-80">
       <Link to={`/product/${product._id}`}>
-        <img src={product.image} alt="product_img" className="h-12" />
+        <img src={product.image[0]} alt="product_img" className="h-12" />
         <div className="flex flex-col">
           <span>{product.name}</span>
           <span>${product.price}</span>

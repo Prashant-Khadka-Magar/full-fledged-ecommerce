@@ -14,7 +14,7 @@ function ProductEdit() {
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState([]);
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
   const [countInStock, setCountInStock] = useState("");
@@ -30,14 +30,11 @@ function ProductEdit() {
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
 
-  const [uploadProductImage, { isLoading: loadingUpload }] =
-    useUploadProductImageMutation();
-
   useEffect(() => {
     if (product) {
       setName(product.name);
       setPrice(product.price);
-      setImage(product.image);
+      setImages(product.image);
       setBrand(product.brand);
       setCategory(product.category);
       setCountInStock(product.countInStock);
@@ -45,43 +42,44 @@ function ProductEdit() {
     }
   }, [product]);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    const updatedProduct = {
-      productId,
-      name,
-      price,
-      image,
-      brand,
-      category,
-      countInStock,
-      description,
-    };
-
-    const result = await updateProduct(updatedProduct);
-
-    if (result.error) {
-      toast.error(result.error);
-    } else {
-      toast.success("Product Updated");
-      refetch()
-      navigate("/admin/productlist");
-    }
+  const imageUploadHandler = (e) => {
+    setImages(e.target.files);
   };
 
-  const fileUploadHandler = async (e) => {
+  const submitHandler = async (e) => {
+    e.preventDefault();
+  
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
-    try {
-       const res = await uploadProductImage(formData).unwrap();
-       toast.success(res.message);
-       setImage(res.image);
-    } catch (err) {
-       console.error("Error uploading image:", err);
-       toast.error(err?.data?.message || "Failed to upload image");
+  
+    formData.append("productId", productId);
+    formData.append("name", name);
+    formData.append("price", price);
+  
+    // Append each file in the FileList separately
+    for (let i = 0; i < images.length; i++) {
+      formData.append("image", images[i]);
     }
- };
- 
+  
+    formData.append("brand", brand);
+    formData.append("category", category);
+    formData.append("countInStock", countInStock);
+    formData.append("description", description);
+  
+    try {
+      const result = await updateProduct(formData).unwrap();
+  
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Product Updated");
+        refetch();
+        navigate("/admin/productlist");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   return (
     <div>
@@ -112,14 +110,13 @@ function ProductEdit() {
             placeholder="price"
           />
           <>
-            {!image && <label>{product.image}</label>}
+            {!images && <label>{product.image}</label>}
             <input
               type="file"
-              // value={image}
-              onChange={fileUploadHandler}
+              onChange={imageUploadHandler}
               placeholder="Image"
+              multiple
             />
-            {loadingUpload && <Loader />}
           </>
           <input
             type="text"

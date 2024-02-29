@@ -11,6 +11,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     shippingPrice,
     taxPrice,
     totalPrice,
+    couponDiscount
   } = req.body;
 
   if (orderItems && orderItems.length === 0) {
@@ -31,6 +32,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
         taxPrice,
         shippingPrice,
         totalPrice,
+        couponDiscount
       });
 
       const createdOrder = await order.save();

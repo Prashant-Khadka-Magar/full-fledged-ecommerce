@@ -1,10 +1,12 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 //login user
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
 
   if (!email || !password) {
     res.status(400);
@@ -51,10 +53,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("USER ALREADY EXIST");
   }
 
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
   const user = await User.create({
     name,
     email,
     password,
+    avatar: avatar.url,
   });
 
   if (user) {
@@ -64,6 +70,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      avatar: avatar.url,
     });
   } else {
     res.status(401);
@@ -126,10 +133,16 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // get all the users -ADMIN ONLY
 const getUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find({});
-    res.status(200).json({
-      users,
-    });
+    const keyword=req.query.keyword ? {name: { $regex: req.query.keyword, $options: "i" }} :{}
+    const pageSize = 3;
+    const page = Number(req.query.pageNumber) || 1;
+    const count = await User.countDocuments();
+
+    const users = await User.find({...keyword})
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    res.json({ users, page, pages: Math.ceil(count / pageSize) });
   } catch (error) {
     res.status(500).json({
       message: "Error fetching users",

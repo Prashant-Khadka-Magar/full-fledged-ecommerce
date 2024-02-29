@@ -1,20 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useDeleteUserMutation,
   useGetUsersQuery,
 } from "../../slices/usersApiSlice";
 import Loader from "../../components/Loader";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import UsersPagination from "../../components/UsersPagination";
 
 function UserList() {
-  const {
-    data: users,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetUsersQuery();
+  const { pageNumber } = useParams();
+  const [keyword, setKeyword] = useState("");
+  const { data, isLoading, isError, error, refetch } = useGetUsersQuery({
+    keyword,
+    pageNumber,
+  });
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
 
@@ -22,7 +22,7 @@ function UserList() {
     if (window.confirm("Are you sure you want to delete")) {
       try {
         await deleteUser(userId);
-        toast.success("User deleted successfully")
+        toast.success("User deleted successfully");
         refetch();
       } catch (error) {
         toast.error(error?.data?.message || error.message);
@@ -40,6 +40,13 @@ function UserList() {
   return (
     <div>
       {loadingDelete && <Loader />}
+      <form>
+        <input
+          type="text"
+          onChange={(e) => setKeyword(e.target.value)}
+          value={keyword}
+        />
+      </form>
       <h1 className="text-center">All the Users</h1>
       <table className="table-auto border border-collapse w-full">
         <thead>
@@ -51,31 +58,33 @@ function UserList() {
           </tr>
         </thead>
         <tbody>
-          {users.users.map((user) => (
-            <tr key={user._id} className="border-b">
-              <td className="border p-2">{user.name}</td>
-              <td className="border p-2">
-                <a href={`mailto:${user.email}`}>{user.email}</a>
-              </td>
-              <td className="border p-2">
-                {user.isAdmin ? <p>✔</p> : <p>❌</p>}
-              </td>
-              <td className="border p-2 flex gap-x-2">
-                <span className="cursor-pointer hover:text-blue-500">
+          {data.users &&
+            data.users.map((user) => (
+              <tr key={user._id} className="border-b">
+                <td className="border p-2">{user.name}</td>
+                <td className="border p-2">
+                  <a href={`mailto:${user.email}`}>{user.email}</a>
+                </td>
+                <td className="border p-2">
+                  {user.isAdmin ? <p>✔</p> : <p>❌</p>}
+                </td>
+                <td className="border p-2 flex gap-x-2">
+                  <span className="cursor-pointer hover:text-blue-500">
                     <Link to={`/admin/user/${user._id}/edit`}>🖋</Link>
-                </span>
-                <span className="cursor-pointer hover:text-red-500 ">
-                  {user.isAdmin ? (
-                    <p>❌</p>
-                  ) : (
-                    <p onClick={() => deleteUserHandler(user._id)}>🗑</p>
-                  )}
-                </span>
-              </td>
-            </tr>
-          ))}
+                  </span>
+                  <span className="cursor-pointer hover:text-red-500 ">
+                    {user.isAdmin ? (
+                      <p>❌</p>
+                    ) : (
+                      <p onClick={() => deleteUserHandler(user._id)}>🗑</p>
+                    )}
+                  </span>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
+      {data && <UsersPagination page={data.page} pages={data.pages} />}
     </div>
   );
 }

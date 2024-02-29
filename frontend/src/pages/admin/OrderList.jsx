@@ -6,7 +6,6 @@ import {Link} from 'react-router-dom'
 function OrderList() {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
 
-  console.log(orders);
   if (isLoading) {
     return <Loader />;
   }

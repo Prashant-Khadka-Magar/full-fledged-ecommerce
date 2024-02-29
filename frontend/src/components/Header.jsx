@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../slices/authSlice";
 import { useLogoutMutation } from "../slices/usersApiSlice";
+import SearchBox from "./SearchBox";
 function Header() {
   const { total_items } = useSelector((state) => state.cart);
 
@@ -24,6 +25,7 @@ function Header() {
   };
   return (
     <div className="bg-basecolor flex justify-between text-white sm:px-2 sm:text-lg font-bold">
+      <SearchBox />
       <NavLink to="/">
         <img
           loading="lazy"
@@ -61,6 +63,7 @@ function Header() {
            <Link to="/admin/orderlist">Orders</Link>
           <Link to="/admin/productlist">Products</Link>
           <Link to="/admin/userlist">Users</Link>
+          <Link to="/admin/coupons">Coupons</Link>
          </div>
         )}
       </div>

@@ -43,7 +43,7 @@ function Cart() {
                   <div className="flex items-center">
                     <img
                       loading="lazy"
-                      src={image}
+                      src={image[0]}
                       alt="cart_img"
                       className="h-16"
                     />
@@ -87,7 +87,7 @@ function Cart() {
             key={_id}
             className="flex items-center justify-between   py-2 px-1 mt-2"
           >
-            <img loading="lazy" src={image} alt="cart_img" className="h-16" />
+            <img loading="lazy" src={image[0]} alt="cart_img" className="h-16" />
             <div className="flex flex-col">
               <span>{name}</span>
               <span>{price}</span>

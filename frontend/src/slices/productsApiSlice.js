@@ -4,12 +4,24 @@ import { apiSlice } from "./apiSlice";
 export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: () => ({
+      query: ({ keyword, pageNumber, sort }) => ({
         url: PRODUCTS_URL,
+        params: {
+          keyword,
+          pageNumber,
+          sort,
+        },
       }),
-      providesTags: ["Products"],
+      providesTags: ["Product"],
       keepUnusedDataFor: 5,
     }),
+    getSearchSuggestions: builder.query({
+      query: (keyword) => ({
+        url: `${PRODUCTS_URL}/suggestions/${keyword}`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+
     getProductsDetails: builder.query({
       query: (productId) => ({
         url: `${PRODUCTS_URL}/${productId}`,
@@ -44,6 +56,19 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    createReview: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.productId}/reviews`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Product"],
+    }),
+    getRelatedProducts:builder.query({
+      query:(productId)=>({
+        url: `${PRODUCTS_URL}/${productId}/related`,
+      })
+    })
   }),
 });
 
@@ -54,4 +79,7 @@ export const {
   useUpdateProductMutation,
   useUploadProductImageMutation,
   useDeleteProductMutation,
+  useCreateReviewMutation,
+  useGetSearchSuggestionsQuery,
+  useGetRelatedProductsQuery
 } = productsApiSlice;

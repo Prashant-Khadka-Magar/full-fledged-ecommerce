@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useGetProductsQuery,
   useCreateProductMutation,
   useDeleteProductMutation,
 } from "../../slices/productsApiSlice";
 import Loader from "../../components/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import Paginate from "../../components/Paginate";
 
 function ProductList() {
-  const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+  const { pageNumber } = useParams();
+  const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
+  const { data, isLoading, error, refetch } = useGetProductsQuery({
+    keyword,
+    pageNumber,
+  });
   const [createProduct, { isLoading: loadingCreate }] =
     useCreateProductMutation();
   const [deleteProduct, { isLoading: loadingDelete }] =
@@ -18,9 +25,10 @@ function ProductList() {
   const createProductHandler = async () => {
     if (window.confirm("Are you sure you want to create")) {
       try {
-        await createProduct();
-        toast.success("Successfully Deleted");
+        let createdProduct = await createProduct();
+        toast.success("Successfully Created");
         refetch();
+        navigate(`/admin/product/${createdProduct.data._id}/edit`);
       } catch (error) {
         TransformStream.error(error?.data?.message || error.message);
       }
@@ -39,6 +47,13 @@ function ProductList() {
   };
   return (
     <>
+      <form>
+        <input
+          type="text"
+          onChange={(e) => setKeyword(e.target.value)}
+          value={keyword}
+        />
+      </form>
       <header className="flex justify-between">
         <h1>Products</h1>
         <button onClick={createProductHandler}>Create Product</button>
@@ -49,7 +64,7 @@ function ProductList() {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Image</th>
               <th>NAME</th>
               <th>PRICE</th>
               <th>CATEGORY</th>
@@ -58,9 +73,15 @@ function ProductList() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {data.products.map((product) => (
               <tr key={product._id}>
-                <td>{product._id}</td>
+                <td>
+                  <img
+                    src={product.image[0]}
+                    alt="product_list_image"
+                    className="h-12"
+                  />
+                </td>
                 <td>{product.name}</td>
                 <td>{product.price}</td>
                 <td>{product.category}</td>
@@ -81,6 +102,7 @@ function ProductList() {
           </tbody>
         </table>
       )}
+      {data && <Paginate page={data.page} pages={data.pages} isAdmin={true} />}
       {loadingDelete && <Loader />}
       {loadingCreate && <Loader />}
     </>

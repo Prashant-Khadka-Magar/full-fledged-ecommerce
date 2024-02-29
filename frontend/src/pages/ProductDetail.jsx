@@ -2,25 +2,50 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Rating from "../components/Rating";
-import { useGetProductsDetailsQuery } from "../slices/productsApiSlice";
+import {
+  useCreateReviewMutation,
+  useGetProductsDetailsQuery,
+  useGetRelatedProductsQuery,
+} from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice";
+import { toast } from "react-toastify";
+import ProductImages from "../components/ProductImage";
+import Reviews from "../components/Reviews";
+import RelatedProduct from "../components/RelatedProduct";
 
 function ProductDetail() {
   const { id: productId } = useParams();
+  const [amount, setAmount] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
   const {
     data: product,
     isLoading,
     error,
+    refetch,
   } = useGetProductsDetailsQuery(productId);
+  const { data: relatedProduct, isLoading: relatedLoading } =
+    useGetRelatedProductsQuery(productId);
 
-  const [amount, setAmount] = useState(0);
+  if (!relatedLoading) {
+    console.log(relatedProduct);
+  }
+
+  const [
+    createReview,
+    { isLoading: loadingProductReview, isError, error: errorReview },
+  ] = useCreateReviewMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (product?.countInStock > 0) {
       setAmount(1);
     }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [product]);
 
   const dispatch = useDispatch();
@@ -42,6 +67,32 @@ function ProductDetail() {
     dispatch(addToCart({ product: product, amount: amount }));
   };
 
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    if (isError) {
+      toast.error(errorReview.message);
+    }
+
+    if (rating === 0 || comment.trim().length === 0) {
+      toast.error("Please enter a valid rating and comment");
+      return;
+    }
+
+    try {
+      await createReview({
+        productId,
+        rating,
+        comment,
+      }).unwrap();
+
+      refetch();
+      toast.success("Reviewed successfully");
+      setRating(0);
+      setComment("");
+    } catch (error) {
+      toast.error(error?.data?.messsage || error.messsage);
+    }
+  };
   if (isLoading) {
     return (
       <h1 className="flex h-screen justify-center items-center text-2xl">
@@ -61,9 +112,7 @@ function ProductDetail() {
     <div>
       <Link to="/">Go Back</Link>
       <div>
-        {product.image && product.image && (
-          <img src={product.image} alt="single_img" className="h-18" />
-        )}
+        {product && product.image && <ProductImages images={product.image} />}
 
         <div className="flex flex-col">
           <span>{product.name}</span>
@@ -106,6 +155,50 @@ function ProductDetail() {
           </div>
         </div>
       </div>
+      <div>
+        <h1>Reviews</h1>
+        {product.reviews.length === 0 ? (
+          <div>No Reviews</div>
+        ) : (
+          <Reviews reviews={product.reviews} />
+        )}
+        <div>
+          {userInfo ? (
+            <>
+              <h2>Write a review</h2>
+              <form onSubmit={submitHandler}>
+                <select
+                  name=""
+                  id=""
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                >
+                  <option value="0" disabled defaultValue>
+                    Choose Rating
+                  </option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <input
+                  type="text"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="enter your views in the product"
+                />
+                <button type="submit">
+                  {!loadingProductReview ? "Submit" : <Loader />}
+                </button>
+              </form>
+            </>
+          ) : (
+            <h1>Login to Review</h1>
+          )}
+        </div>
+      </div>
+      {!relatedLoading && <RelatedProduct products={relatedProduct} />}
     </div>
   );
 }

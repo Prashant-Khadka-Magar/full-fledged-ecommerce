@@ -145,7 +145,7 @@ function Order() {
               <div className="flex gap-x-6 border-t mt-2 pt-1" key={item._id}>
                 <div className="flex">
                   <img
-                    src={item.image}
+                    src={item.image[0]}
                     alt="order_item_image"
                     className="h-12"
                   />

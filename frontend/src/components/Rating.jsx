@@ -3,7 +3,7 @@ import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 function Rating(star) {
   let fullStar = Math.floor(star);
-  let halfStar = star % 1 === 0.5 ? 1 : 0;
+  let halfStar = star % 1 >= 0.5 ? 1 : 0;
   let emptyStar = Math.ceil(5 - fullStar - halfStar);
 
   return (

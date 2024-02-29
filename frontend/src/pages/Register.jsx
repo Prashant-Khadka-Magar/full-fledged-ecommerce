@@ -11,6 +11,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [avatar, setAvatar] = useState(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,17 +33,36 @@ function Register() {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    if (
+      email.trim() === "" ||
+      password.trim() === "" ||
+      name.trim() === "" ||
+      !avatar
+    ) {
+      toast.error("Please Enter all the fields");
+      return;
+    }
+
     if (password !== password2) {
       toast.error("The passwords din't match");
       return;
-    } else {
-      try {
-        const res = await register({ name, email, password }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        navigate(redirect);
-      } catch (err) {
-        toast.error(err.data.message || err.error);
-      }
+    }
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("password2", password2);
+    formData.append("avatar", avatar);
+
+    try {
+      const res = await register(formData).unwrap();
+      dispatch(setCredentials({ ...res }));
+      toast.success('User created Successfully')
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err.data.message || err.error);
     }
   };
   return (
@@ -60,6 +80,11 @@ function Register() {
           placeholder="enter email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setAvatar(e.target.files[0])}
         />
         <input
           type="password"

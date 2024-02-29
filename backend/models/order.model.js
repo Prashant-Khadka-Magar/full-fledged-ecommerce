@@ -17,10 +17,10 @@ const orderSchema = new Schema(
           type: Number,
           required: true,
         },
-        image: {
+        image:[ {
           type: String,
           required: true,
-        },
+        }],
         price: {
           type: Number,
           required: true,
@@ -79,6 +79,11 @@ const orderSchema = new Schema(
       default: 0.0,
     },
     shippingPrice: {
+      type: Number,
+      required: true,
+      default: 0.0,
+    },
+    couponDiscount: {
       type: Number,
       required: true,
       default: 0.0,

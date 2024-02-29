@@ -26,7 +26,6 @@ function UserEdit() {
     }
   }, [user]);
 
-  console.log(user);
 
   const submitHandler = async (e) => {
     e.preventDefault();
