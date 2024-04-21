@@ -20,6 +20,7 @@ function ProductDetail() {
   const [amount, setAmount] = useState(0);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [dataLoading,setDataLoading]=useState(false);
 
   const {
     data: product,
@@ -30,9 +31,10 @@ function ProductDetail() {
   const { data: relatedProduct, isLoading: relatedLoading } =
     useGetRelatedProductsQuery(productId);
 
-  if (!relatedLoading) {
-    console.log(relatedProduct);
-  }
+  useEffect(()=>{
+    setDataLoading(true);
+  },[productId])
+
 
   const [
     createReview,
@@ -46,6 +48,7 @@ function ProductDetail() {
       setAmount(1);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setDataLoading(false)
   }, [product]);
 
   const dispatch = useDispatch();
@@ -93,10 +96,9 @@ function ProductDetail() {
       toast.error(error?.data?.messsage || error.messsage);
     }
   };
-  if (isLoading) {
+  if (isLoading || dataLoading) {
     return (
       <h1 className="flex h-screen justify-center items-center text-2xl">
-        {" "}
         <Loader />
       </h1>
     );
@@ -160,7 +162,7 @@ function ProductDetail() {
         {product.reviews.length === 0 ? (
           <div>No Reviews</div>
         ) : (
-          <Reviews reviews={product.reviews} />
+          <Reviews reviews={product.reviews} productId={productId} />
         )}
         <div>
           {userInfo ? (

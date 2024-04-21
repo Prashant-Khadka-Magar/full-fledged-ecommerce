@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   useUpdateProductMutation,
   useGetProductsDetailsQuery,
+  useUploadProductImageMutation,
 } from "../../slices/productsApiSlice";
 
 function ProductEdit() {
@@ -18,7 +19,6 @@ function ProductEdit() {
   const [category, setCategory] = useState("");
   const [countInStock, setCountInStock] = useState("");
   const [description, setDescription] = useState("");
-  const [isFeatured, setIsFeatured] = useState(false);
 
   const {
     data: product,
@@ -39,7 +39,6 @@ function ProductEdit() {
       setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
-      setIsFeatured(product.isFeatured);
     }
   }, [product]);
 
@@ -49,29 +48,38 @@ function ProductEdit() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
-    for (let i = 0; i < images.length; i++) {
-      formData.append("image", images[i]);
-    }
+  
     formData.append("productId", productId);
     formData.append("name", name);
     formData.append("price", price);
+  
+    // Append each file in the FileList separately
+    for (let i = 0; i < images.length; i++) {
+      formData.append("image", images[i]);
+    }
+  
     formData.append("brand", brand);
     formData.append("category", category);
     formData.append("countInStock", countInStock);
     formData.append("description", description);
-    formData.append("isFeatured", isFeatured);
-
+  
     try {
-      await updateProduct(formData).unwrap();
-      toast.success("Product Updated");
-      refetch();
-      navigate("/admin/productlist");
+      const result = await updateProduct(formData).unwrap();
+  
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Product Updated");
+        refetch();
+        navigate("/admin/productlist");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   return (
     <div>
@@ -134,15 +142,6 @@ function ProductEdit() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Stock Count"
           />
-          <div className="flex gap-x-2">
-            <input
-              type="checkbox"
-              id="featured"
-              checked={isFeatured}
-              onChange={(e) => setIsFeatured(e.target.checked)}
-            />
-            <label htmlFor="featured">Add To Fetaure Products</label>
-          </div>
           <button type="submit">
             {!loadingUpdate ? "Update" : <Loader />}
           </button>

@@ -25,4 +25,13 @@ button {
   background-color: #edf2f7;
   font-weight: bold;
 }
-
+.pagination-component {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.coupon {
+  background-image: url("https://static.vecteezy.com/system/resources/thumbnails/010/189/118/small/volume-template-of-golden-ticket-gift-certificate-gift-voucher-holiday-reward-card-design-with-sparkles-stars-on-golden-background-tied-with-ribbon-with-gold-bow-concept-for-coupon-event-vector.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

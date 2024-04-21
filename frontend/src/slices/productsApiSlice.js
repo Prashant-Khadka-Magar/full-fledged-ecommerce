@@ -4,17 +4,30 @@ import { apiSlice } from "./apiSlice";
 export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({ keyword, pageNumber, sort }) => ({
+      query: ({
+        keyword,
+        pageNumber,
+        sort,
+        minPrice,
+        maxPrice,
+        brand,
+        category,
+      }) => ({
         url: PRODUCTS_URL,
         params: {
           keyword,
           pageNumber,
           sort,
+          minPrice,
+          maxPrice,
+          brand,
+          category,
         },
       }),
       providesTags: ["Product"],
       keepUnusedDataFor: 5,
     }),
+
     getSearchSuggestions: builder.query({
       query: (keyword) => ({
         url: `${PRODUCTS_URL}/suggestions/${keyword}`,
@@ -36,10 +49,10 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
     updateProduct: builder.mutation({
-      query: (data) => ({
-        url: `${PRODUCTS_URL}/${data.productId}`,
+      query: (formData) => ({
+        url: `${PRODUCTS_URL}/${formData.get("productId")}`,
         method: "PUT",
-        body: data,
+        body: formData,
       }),
       invalidatesTags: ["Products"],
     }),
@@ -64,11 +77,26 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Product"],
     }),
-    getRelatedProducts:builder.query({
-      query:(productId)=>({
+    replyToReview: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.productId}/reviews/${data.reviewId}/reply`,
+        method: "POST",
+        body: data.reply,
+      }),
+      invalidatesTags: ["Product"],
+    }),
+    getRelatedProducts: builder.query({
+      query: (productId) => ({
         url: `${PRODUCTS_URL}/${productId}/related`,
-      })
-    })
+      }),
+    }),
+    getFeaturedProducts: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/featured`,
+      }),
+      providesTags: ["Product"],
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -81,5 +109,7 @@ export const {
   useDeleteProductMutation,
   useCreateReviewMutation,
   useGetSearchSuggestionsQuery,
-  useGetRelatedProductsQuery
+  useGetRelatedProductsQuery,
+  useReplyToReviewMutation,
+  useGetFeaturedProductsQuery
 } = productsApiSlice;

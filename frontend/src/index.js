@@ -29,15 +29,13 @@ import ProductEdit from "./pages/admin/ProductEdit";
 import UserList from "./pages/admin/UserList";
 import UserEdit from "./pages/admin/UserEdit";
 import Coupons from "./pages/admin/Coupons";
+import Hero from "./pages/Hero";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route index={true} path="/" element={<Home />} />
-      <Route  path="/sort/:sort" element={<Home />} />
-      <Route  path="/search/:keyword" element={<Home />} />
-      <Route  path="/page/:pageNumber" element={<Home />} />
-      <Route  path="search/:keyword/page/:pageNumber" element={<Home />} />
+      <Route index={true} path="/" element={<Hero />} />
+      <Route path="/products" element={<Home />} />
       <Route path="/product/:id" element={<ProductDetail />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
@@ -52,7 +50,10 @@ const router = createBrowserRouter(
       <Route path="" element={<AdminRoute />}>
         <Route path="/admin/orderlist" element={<OrderList />} />
         <Route path="/admin/productlist" element={<ProductList />} />
-        <Route path="/admin/productlist/:pageNumber" element={<ProductList />} />
+        <Route
+          path="/admin/productlist/:pageNumber"
+          element={<ProductList />}
+        />
         <Route path="/admin/product/:id/edit" element={<ProductEdit />} />
         <Route path="/admin/userlist" element={<UserList />} />
         <Route path="/admin/userlist/:pageNumber" element={<UserList />} />

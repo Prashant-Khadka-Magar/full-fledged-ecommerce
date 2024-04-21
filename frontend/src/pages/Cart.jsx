@@ -6,12 +6,14 @@ import {
   increaseAmount,
   decreaseAmount,
 } from "../slices/cartSlice";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Coupon from "../components/Coupon";
 function Cart() {
-  const { cart, total_price, shipping_fee } = useSelector(
+  const { cart, total_price, shipping_fee,coupon_discount } = useSelector(
     (state) => state.cart
   );
+
+  console.log(coupon_discount)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -87,7 +89,12 @@ function Cart() {
             key={_id}
             className="flex items-center justify-between   py-2 px-1 mt-2"
           >
-            <img loading="lazy" src={image[0]} alt="cart_img" className="h-16" />
+            <img
+              loading="lazy"
+              src={image[0]}
+              alt="cart_img"
+              className="h-16"
+            />
             <div className="flex flex-col">
               <span>{name}</span>
               <span>{price}</span>
@@ -115,7 +122,8 @@ function Cart() {
         ))}
       </div>
       <button onClick={() => dispatch(clearCart())}>Clear Cart</button>
-      <div className=" flex justify-end">
+      <Coupon />
+      <div className="flex justify-end">
         <div className="bg-white mr-2 p-2 px-4">
           <div className="flex gap-x-2">
             <p className="text-gray-500">SubTotal:</p>
@@ -125,10 +133,14 @@ function Cart() {
             <p className="text-gray-500">Shipping Fee:</p>
             <p className="font-semibold">{shipping_fee}</p>
           </div>
+          <div className="flex gap-x-2">
+            <p className="text-gray-500">Coupon Discount:</p>
+            <p className="font-semibold">{coupon_discount}</p>
+          </div>
           <div className="flex gap-x-2 border-t pt-4">
             <p className="text-gray-500">Grand Total:</p>
             <p className="font-semibold">
-              {(shipping_fee + total_price).toFixed(2)}
+              {(shipping_fee + total_price - coupon_discount).toFixed(2)}
             </p>
           </div>
         </div>

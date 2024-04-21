@@ -11,7 +11,8 @@ const loadCartFromLocalStorage = () => {
         shipping_address: {},
         payment_method: "PayPal",
         tax_price: 0,
-        shipping_fee:15
+        shipping_fee: 15,
+        coupon_discount: 0,
       };
 };
 
@@ -124,6 +125,13 @@ const cartSlice = createSlice({
       updatedTotals(state);
       saveCartToLocalStorage(state);
     },
+    applyCoupon: (state, action) => {
+      state.coupon_discount = action.payload;
+    },
+    clearCoupon: (state) => {
+      state.coupon_discount = 0;
+      saveCartToLocalStorage(state);
+    }
   },
 });
 
@@ -135,5 +143,7 @@ export const {
   removeFromCart,
   saveShippingAddress,
   savePaymentMethod,
+  applyCoupon,
+  clearCoupon
 } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from "react";
+
+function Pagination({ pagesNo, currentPage, setPageNumber }) {
+  const [arrOfCurrentButtons, setArrOfCurrentButtons] = useState([]);
+  const pageNumbers = Array.from({ length: pagesNo }, (_, idx) => idx + 1);
+
+  useEffect(() => {
+    let tempPages = [];
+    if (pagesNo <= 5) {
+      tempPages = pageNumbers;
+    } else if (currentPage <= 3) {
+      tempPages = [...pageNumbers.slice(0, 4), "...", pagesNo];
+    } else if (currentPage >= pagesNo - 2) {
+      tempPages = [1, "...", ...pageNumbers.slice(pagesNo - 4)];
+    } else {
+      tempPages = [
+        1,
+        "...",
+        ...pageNumbers.slice(currentPage - 1, currentPage + 2), // Adjusted slice
+        "...",
+        pagesNo,
+      ];
+    }
+    setArrOfCurrentButtons(tempPages);
+  }, [currentPage]);
+
+  const pageChangeHandler = (page_no) => {
+    setPageNumber(page_no);
+  };
+
+  const nextHandler = () => {
+    if (currentPage >= pagesNo) {
+      return;
+    }
+    setPageNumber((prev) => prev + 1);
+  };
+  const prevHandler = () => {
+    if (currentPage <= 1) {
+      return;
+    }
+    setPageNumber((prev) => prev - 1);
+  };
+  return (
+    <div>
+      <div className="flex gap-x-1">
+        <button
+          className={`${currentPage === 1 && "bg-black"}`}
+          disabled={currentPage === 1}
+          onClick={prevHandler}
+        >
+          ◀
+        </button>
+        {arrOfCurrentButtons.map((item, index) => (
+          <button
+            key={index}
+            className={`${item === currentPage && "bg-gray-500"}`}
+            value={item}
+            onClick={() => pageChangeHandler(item)}
+          >
+            {item}
+          </button>
+        ))}
+        <button
+          className={`${currentPage === pagesNo && "bg-black"}`}
+          disabled={currentPage === pagesNo}
+          onClick={nextHandler}
+        >
+          ▶
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default Pagination;

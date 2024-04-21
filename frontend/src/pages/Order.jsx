@@ -9,7 +9,7 @@ import {
 } from "../slices/ordersApiSlice";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from "react-toastify";
-import { UseSelector, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 function Order() {
   const { id: orderId } = useParams();
@@ -167,11 +167,15 @@ function Order() {
             </span>
             <span className="flex gap-x-2">
               <p>Tax:</p>
-              <p>{order.taxPrice}</p>
+              <p>+{order.taxPrice}</p>
             </span>
             <span className="flex gap-x-2">
               <p>Shipping:</p>
-              <p>{order.shippingPrice}</p>
+              <p>+{order.shippingPrice}</p>
+            </span>
+            <span className="flex gap-x-2">
+              <p>Coupon Discount:</p>
+              <p>-{order.couponDiscount}</p>
             </span>
             <span className="flex gap-x-2">
               <p>Grand Total:</p>

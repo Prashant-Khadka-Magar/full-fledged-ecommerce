@@ -25,7 +25,7 @@ function Header() {
   };
   return (
     <div className="bg-basecolor flex justify-between text-white sm:px-2 sm:text-lg font-bold">
-      <SearchBox />
+      {/* <SearchBox /> */}
       <NavLink to="/">
         <img
           loading="lazy"

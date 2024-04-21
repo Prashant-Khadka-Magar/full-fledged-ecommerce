@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useCreateOrderMutation } from "../slices/ordersApiSlice";
 import { toast } from "react-toastify";
-import { clearCart } from "../slices/cartSlice";
+import { clearCart, clearCoupon } from "../slices/cartSlice";
 
 function PlaceOrder() {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ function PlaceOrder() {
     total_price,
     shipping_fee,
     tax_price,
+    coupon_discount,
   } = useSelector((state) => state.cart);
 
   useEffect(() => {
@@ -37,9 +38,11 @@ function PlaceOrder() {
         itemsPrice: total_price,
         shippingPrice: shipping_fee,
         taxPrice: tax_price,
-        totalPrice: total_price + shipping_fee + tax_price,
+        couponDiscount: coupon_discount,
+        totalPrice: total_price + shipping_fee + tax_price - coupon_discount,
       }).unwrap();
       dispatch(clearCart());
+      dispatch(clearCoupon())
       navigate(`/order/${res._id}`);
     } catch (error) {
       toast.error(error);
@@ -102,8 +105,13 @@ function PlaceOrder() {
               <p>{shipping_fee}</p>
             </span>
             <span className="flex gap-x-2">
+              <p>Coupon Discount:</p>
+              <p>{coupon_discount}</p>
+            </span>
+
+            <span className="flex gap-x-2">
               <p>Grand Total:</p>
-              <p>{shipping_fee + tax_price + total_price}</p>
+              <p>{shipping_fee + tax_price + total_price - coupon_discount}</p>
             </span>
             <button
               className="mt-2"
